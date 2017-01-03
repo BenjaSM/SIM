@@ -1,8 +1,8 @@
 % Imagenes Simuladas
-ImOriginal=rgb2gray(imread('USAFTESIS.jpg')); % Lectura de la imagen que se utilizar· en la simulaciÛn
-Im=double(imresize(ImOriginal,[512 512]))/255; clear ImOriginal; %Cambia el tamaÒo de la imagen a 512x512
+ImOriginal=rgb2gray(imread('USAFTESIS.jpg')); % Lectura de la imagen que se utilizar√° en la simulaci√≥n
+Im=double(imresize(ImOriginal,[512 512]))/255; clear ImOriginal; %Cambia el tama√±o de la imagen a 512x512
 
-pxsize=0.05; %TamaÒo de pixel
+pxsize=0.05; %Tama√±o de pixel
 
 
 %Coordenadas Espacio Real
@@ -11,37 +11,37 @@ Lx=n*pxsize;
 Ly=m*pxsize;
 
 [X1,Y1]=meshgrid(-Lx/2:pxsize:Lx/2-pxsize,-Ly/2:pxsize:Ly/2-pxsize);
-%Coordenadas Espacio RecÌproco
+%Coordenadas Espacio Rec√≠proco
 fx=-(1/(2*pxsize)):1/Lx:1/(2*pxsize)-1/Lx;
 fy=-(1/(2*pxsize)):1/Ly:1/(2*pxsize)-1/Ly;
 [Fx,Fy]=meshgrid(fx,fy);
 
-theta=[0 135 90 45 ]; % ·ngulos del patrÛn de iluminaciÛn
+theta=[0 135 90 45 ]; % √°ngulos del patr√≥n de iluminaci√≥n
 nangles=4;
 nphases=3;
 phi=linspace(0,pi,nphases+1); %
-phi=phi(1:nphases);           %  El vector phi contiene las fases de cada patrÛn de iluminaciÛn (PI)
-H=OTF2D(n,m,0,0,pxsize);      %  Generar OTF, el tamaÒo de Èsta se controla en la funciÛn OTF2D  
+phi=phi(1:nphases);           %  El vector phi contiene las fases de cada patr√≥n de iluminaci√≥n (PI)
+H=OTF2D(n,m,0,0,pxsize);      %  Generar OTF, el tama√±o de √©sta se controla en la funci√≥n OTF2D  
 PSF=otf2psf(H);               %  Generar PSF del sistema
 %plot(-Lx/2:pxsize:Lx/2-pxsize,abs(PSF(257,:)));axis([-3 3 0 inf]) 
 
 
 
 
-ImF=fftshift(fft2(Im)).*H; % AcciÛn del sistema Ûptico sobre la imagen en el espacio recÌproco
-ImOTF=ifft2(ImF); % Imagen formada por el sistema Ûptico
-ki=0.65*2;        % Frecuecia espacial del patrÛn de iluminaciÛn
+ImF=fftshift(fft2(Im)).*H; % Acci√≥n del sistema √≥ptico sobre la imagen en el espacio rec√≠proco
+ImOTF=ifft2(ImF); % Imagen formada por el sistema √≥ptico
+ki=0.65*2;        % Frecuecia espacial del patr√≥n de iluminaci√≥n
 
-%GeneraciÛn del patrÛn de iluminaciÛn
+%Generaci√≥n del patr√≥n de iluminaci√≥n
 for q=1:nangles                          
     for i=1:nphases
-    k = rotxy(deg2rad(theta(q)))*[ki; 0]; 
-    kx = k(1); ky = k(2); 
-    Ir(:,:)=(1+cos(2*pi*(kx*X1+ky*Y1)+phi(i)))/2; % PatrÛn de iluminaciÛn
-    temporal=fftshift(fft2(Im.*Ir)).*H; % AcciÛn del sistema Ûptico sobre el objeto iluminaco por el PI
-    stack(:,:,(q-1)*3+i)=abs(ifft2(temporal));
-    imshow(stack(:,:,(q-1)*3+i),[])
-    pause(0.2)
+        k = rotxy(deg2rad(theta(q)))*[ki; 0]; 
+        kx = k(1); ky = k(2); 
+        Ir(:,:)=(1+cos(2*pi*(kx*X1+ky*Y1)+phi(i)))/2; % Patr√≥n de iluminaci√≥n
+        temporal=fftshift(fft2(Im.*Ir)).*H; % Acci√≥n del sistema √≥ptico sobre el objeto iluminaco por el PI
+        stack(:,:,(q-1)*3+i)=abs(ifft2(temporal)); %Stack es un cubo de datos donde se guardan las im√°genes simuladas
+        imshow(stack(:,:,(q-1)*3+i),[])
+        pause(0.2)
     end
 end
 
@@ -53,9 +53,9 @@ end
 % end
 % clear temp;
 %%
-[theta,A]=DET_ANG_FREC(stack(:,:,:),512,60,20);% La funciÛn DET_ANG_FREC determina los ·ngulos
-% y periodos de los patrones de iluminaciÛn utilizados. Mediante la
-% localizaciÛon de los m·ximos en el espacio recÌproco
+[theta,A]=DET_ANG_FREC(stack(:,:,:),512,60,20);% La funci√≥n DET_ANG_FREC determina los √°ngulos
+% y periodos de los patrones de iluminaci√≥n utilizados. Mediante la
+% localizaci√≥on de los m√°ximos en el espacio rec√≠proco
 
 %%
 
@@ -66,28 +66,29 @@ cubo=(Recorte_Cubo(stack,512,1));
 
 for j=1:12
     im=cubo(:,:,j);
-%     cubo(:,:,j)=(im-min(im(:)))/(max(im(:))-min(im(:)))
-cubo(:,:,j)=mat2gray(im);
+%   cubo(:,:,j)=(im-min(im(:)))/(max(im(:))-min(im(:)))
+    cubo(:,:,j)=mat2gray(im);
 end
 
 
 
-[tx,ty,tz]=size(cubo);%
+[tx,ty,tz]=size(cubo);%Tama√±o del cubo de datos de las im√°genes
 
-tx=pow2(nextpow2(tx));%
+tx=pow2(nextpow2(tx))%
 
-%Zero-Padding de las imagenes a procesar,esto es, aumnentar el tamaÒo de la imagen
-%mediante la incorporaciÛn de un borde de zeros, en este caso la imagen
+%Zero-Padding de las imagenes a procesar,esto es, aumnentar el tama√±o de la imagen
+%mediante la incorporaci√≥n de un borde de zeros, en este caso la imagen
 %pasa de 512x512 a 1024x1024. El fin de esto es aumentar la densidad de
 %puntos en el espacio de frecuencias.
 for i=1:12
     
     cubo2(:,:,i)=padarray(cubo(:,:,i),[tx/2 tx/2]); %Agrega borde de ceros (zero-padding)
     
-    TF_Im_Todas(:,:,i)=(fftshift(fft2(cubo2(:,:,i)))); % Transformada de Fourier de todas las im·genes a tratar.
+    TF_Im_Todas(:,:,i)=(fftshift(fft2(cubo2(:,:,i)))); % Cubo con las transformadas de Fourier de todas las im√°genes a tratar.
     
 end
 % clear cubo 
+
 
 [n,m]=size(TF_Im_Todas(:,:,1));
 
@@ -95,10 +96,10 @@ Lx=n*pxsize;
 Ly=m*pxsize;
 
 
-%Nuevas Coordenadas Espacio Real
+%Nuevas Coordenadas Espacio Real (Recordemos que el zero-padding cambi√≥ el tama√±o de las im√°genes)
 [X1,Y1]=meshgrid(-Lx/2:pxsize:Lx/2-pxsize,-Ly/2:pxsize:Ly/2-pxsize);
 
-%Nuevas Coordenadas Espacio RecÌproco
+%Nuevas Coordenadas Espacio Rec√≠proco
 fx=-(1/(2*pxsize)):1/Lx:1/(2*pxsize)-1/Lx;
 fy=-(1/(2*pxsize)):1/Ly:1/(2*pxsize)-1/Ly;
 [Fx,Fy]=meshgrid(fx,fy);
@@ -107,21 +108,21 @@ nangles=4;
 nphases=3;
 
 
-ki=[ norm(A(1,:)) norm(A(2,:)) norm(A(3,:)) norm(A(4,:)) ]*(1/Lx); %Vector con frec. de cada patrÛn
+ki=[ norm(A(1,:)) norm(A(2,:)) norm(A(3,:)) norm(A(4,:)) ]*(1/Lx); %Vector con la  frecuencia del PI por cada √°ngulo.
 
 
 
-%DECONVOLUCI”N 
+%DECONVOLUCI√ìN 
 SUM1=0;
 SUM2=0;
-ind=[0 -1 1]; %Gustaffson
-sp = zeros(n,m,nphases*nangles);
+ind=[0 -1 1]; % Estos n√∫meros representar√°n en el algoritmo laa componentea (-1, 0, -1) sobre la cual se aplican las funciones
+sp = zeros(n,m,nphases*nangles); % Cubo de datos que guardar√° las componentes separadas
 
 p=0;
 qq=0;
-xxx=zeros(1,nphases);
+FASES=zeros(1,nphases);
 clear Ir
-% xxx=(phi);
+% FASES=(phi);
 for q=1:nangles
  k = rotxy(deg2rad(theta(q)))*[ki(q); 0]; 
  kx = k(1); ky = k(2); 
@@ -129,25 +130,25 @@ for q=1:nangles
      Ir(:,:)=exp(-1i*2*pi*(-kx*X1+ky*Y1)); % Factor de desplazamiento
 
 for l=1:3
-    %DeterminaciÛn de la fase del patrÛn
+    %Determinaci√≥n de la fase del patr√≥n mediante las autocorrelaciones en el espacio rec√≠proco
     A1=TF_Im_Todas(:,:,l+qq).*conj(OTF2D(n,m,0,0,pxsize));
     A2=fft2(ifft2((TF_Im_Todas(:,:,l+qq))).*Ir(:,:)).*conj(OTF2D(n,m,0,0,pxsize)); 
-    AAA=(A1.*conj(A2)); % AutocorrelaciÛn 
-    xxx(1,l)=-angle(sum(AAA(:)));%
+    AAA=(A1.*conj(A2)); % Autocorrelaci√≥n 
+    FASES(1,l)=-angle(sum(AAA(:)));%
 
     
 end
- rad2deg(mod(xxx,2*pi))
-%  Fases(:,q)=wrapTo360(radtodeg(xxx))
+ rad2deg(mod(FASES,2*pi))% Deja las fases expresadas entre 0 y 2pi
+%  Fases(:,q)=wrapTo360(radtodeg(FASES))
 qq=qq+3;
 
 
 
-  M(:,:)=0.5*[2 exp(-1i*xxx(1,1)) exp(1i*xxx(1,1)) ;2 exp(-1i*(xxx(1,2)))  exp(1i*(xxx(1,2)));...
-       2 exp(-1i*(xxx(1,3)))  exp(1i*(xxx(1,3)))];
+  M(:,:)=0.5*[2 exp(-1i*FASES(1,1)) exp(1i*FASES(1,1)) ;2 exp(-1i*(FASES(1,2)))  exp(1i*(FASES(1,2)));...
+       2 exp(-1i*(FASES(1,3)))  exp(1i*(FASES(1,3)))];
     
   
-  Inv_M=inv(M);
+  Inv_M=inv(M); % Inversa de la matriz de fases, esta se utiliza para separar las 3 componentes presentes en cada imagen.
   
     for mm=1:nphases
         
@@ -159,10 +160,10 @@ qq=qq+3;
               temp_separated(:,:,k) = Inv_M(mm,k).*TF_Im_Todas(:,:,k+p); 
               
            
-              sp(:,:,(q-1)*3+mm) = (sp(:,:,(q-1)*3+mm)+temp_separated(:,:,k)); 
+              sp(:,:,(q-1)*3+mm) = (sp(:,:,(q-1)*3+mm)+temp_separated(:,:,k));  % Guarda las componetnes separadas
               
               
-             end
+              end
 %               gca= imshow(log(abs(sp(:,:,(q-1)*3+mm))),[]);
 %               filename=['sp',num2str((q-1)*3+mm)];
 %               fpath='D:\Desktop\Gimp SIM';              
@@ -174,10 +175,10 @@ qq=qq+3;
      T=((q-1)*3+mm);
      
      if   ( T==2||T==5||T==8||T==11 )  
-    %DeterminaciÛn FASE GLOBAL entre componentes 0 y 1,-1  
+    %Determinaci√≥n FASE GLOBAL entre componentes 0 y 1,-1  
 %          xcore=xcorr2(sp(:,:,(q-1)*3+mm-1),Cmov(:,:));
           xcore=sp(:,:,(q-1)*3+mm-1).*conj(Cmov(:,:));
-         dim_xcore=size(xcore);
+          dim_xcore=size(xcore);
 %          offset=angle(xcore(floor(dim_xcore(1)/2)+1,floor(dim_xcore(2)/2)+1));
          
          [M2,I2] = max(xcore(:));
@@ -200,7 +201,7 @@ qq=qq+3;
     
 end
 
-%FunciÛn de ApodizaciÛn
+%Funci√≥n de Apodizaci√≥n
 % 
 % Apo=(OTF2D(n,m,0,0,pxsize));
 % 
@@ -224,29 +225,9 @@ Wide=(cubo2(:,:,1)+cubo2(:,:,2)+cubo2(:,:,3))/3;
 % Wide=padarray(abs(ImOTF),[tx/2 tx/2]);
 FIG=figure(1)
 subplot(1,3,1)
-imshow(Wide,[]);title(['Original, ','NA=1.2, ','ResM·x=',num2str(0.61*0.61/1.2),'um.'])
+imshow(Wide,[]);title(['Original, ','NA=1.2, ','ResM√°x=',num2str(0.61*0.61/1.2),'um.'])
 subplot(1,3,2)
-imshow(RS);title(['ReconstrucciÛn , ','FrecPatrÛn=',num2str(ki(1)^-1),'um.'])
+imshow(RS);title(['Reconstrucci√≥n , ','FrecPatr√≥n=',num2str(ki(1)^-1),'um.'])
 subplot(1,3,3)
 imshow(log(abs(S)),[]);
-% saveas(FIG,'RecoFinal','fig')
-%%
-% close all
-% plot(RS,[])
-% CX=round(CX);
-% CY=round(CY);
-% 
-% for j=1:size(CX)
-%     im_sr(j)=RS(CX(j),CY(j));
-%     im_wide(j)=Wide(CX(j),CY(j));
-% end
-% 
-% %%
-% for i=1:12
-%     gca=imshow(log(abs(sp(:,:,i))+0.6),[]);
-%     axis([256 768 256 768]);
-%                filename=['sp',num2str(i)];
-%               fpath='C:\Users\Nicolas\Desktop\Gimp Sim';              
-%                saveas(gca, fullfile(fpath, filename), 'tiff');
-%                close all
-% end
+
