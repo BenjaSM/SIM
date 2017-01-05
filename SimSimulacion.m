@@ -225,7 +225,7 @@ Wide=(cubo2(:,:,1)+cubo2(:,:,2)+cubo2(:,:,3))/3;
 % Wide=padarray(abs(ImOTF),[tx/2 tx/2]);
 FIG=figure(1)
 subplot(1,3,1)
-imshow(Wide,[]);title(['Original, ','NA=1.2, ','ResMáx=',num2str(0.61*0.61/1.2),'um.'])
+imshow(abs(ImOTF),[]);title(['Original, ','NA=1.2, ','ResMáx=',num2str(0.61*0.61/1.2),'um.'])
 subplot(1,3,2)
 imshow(RS);title(['Reconstrucción , ','FrecPatrón=',num2str(ki(1)^-1),'um.'])
 subplot(1,3,3)
